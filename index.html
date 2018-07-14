@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>vue-editor</title>
+</head>
+
+<body>
+    <div id="app"></div>
+    <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyAzZ4Oq_Z1_BoSLpnNN2KsB_NCJdK20ibQ",
+            authDomain: "mymarkdown-mifukia.firebaseapp.com",
+            databaseURL: "https://mymarkdown-mifukia.firebaseio.com",
+            projectId: "mymarkdown-mifukia",
+            storageBucket: "",
+            messagingSenderId: "989336382759"
+        };
+        firebase.initializeApp(config);
+    </script>
+    <script src="/dist/build.js"></script>
+</body>
+
+</html>
