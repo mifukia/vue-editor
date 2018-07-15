@@ -22,6 +22,9 @@
         <button class="deleteMemoBtn" v-if="memos.length>1" @click="deleteMemo">
           選択中のメモの削除
         </button>
+        <button class="saveMemosBtn" @click="saveMemos">
+          メモの保存
+        </button>
       </div>
       <textarea class="markdown" v-model="memos[selectedIndex].markdown"></textarea>
       <div class="preview" v-html="preview()"></div>
@@ -38,11 +41,41 @@ export default {
     return {
       memos:[
         {
-          markdown:"無題のメモ"
+          markdown:""
         }
       ],
       selectedIndex:0,
     }
+  },
+  created(){
+    /*
+    firebaseのRealtimeDBから.once('value')で一回だけの読み込みを行う
+    Promise形式でデータの読み込みが終わり次第、then内に記載の関数が結果とともに読み込まれる
+    */
+    firebase
+      .database()
+      .ref('memos/'+this.user.uid)
+      .once('value')
+      .then(result => {
+        if(result.val()){//初めて利用するユーザーの場合結果はnullなので。
+          this.memos = result.val();
+        }
+      })
+  },
+  mounted:function(){//コンポーネントの描画が完了したタイミング
+    // ctrl + s でセーブ処理
+    document.onkeydown = e => {
+        if (e.ctrlKey ){
+          if (e.key == "s"){
+              this.saveMemos();
+              return false;
+          }
+        }
+    }  
+  },
+  beforeDestroy(){//コンポーネントが破棄されたタイミング
+    //キーダウンの設定を消す
+    document.onkeydown = null;
   },
   methods: {
     logout(){
@@ -67,6 +100,14 @@ export default {
         this.selectedIndex --;
       }
       console.log(nowDelete)
+    },
+    saveMemos(){
+      //memosの配列をfirebaseのRealtimeDBに保存する
+      firebase
+        .database()
+        .ref('memos/'+this.user.uid)
+        .set(this.memos);
+      alert('データをセーブしました')      
     },
     selectMemo(index){
       //複数のメモから一つを選択する
@@ -142,6 +183,12 @@ export default {
     cursor: pointer;
   }
   .addMemoBtn{
+    margin-top: 20px;
+  }
+  .deleteMemoBtn{
+    margin-top: 20px;
+  }
+  .saveMemosBtn{
     margin-top: 20px;
   }
   .markdown{

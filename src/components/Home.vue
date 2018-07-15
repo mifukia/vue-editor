@@ -19,7 +19,7 @@ export default {
     googleLogin(){
       firebase
         .auth()
-          .signInWithRedirect(new firebase.auth.GoogleAuthProvider())
+        .signInWithRedirect(new firebase.auth.GoogleAuthProvider())
     }
   }
 }
