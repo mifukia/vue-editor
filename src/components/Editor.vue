@@ -11,11 +11,14 @@
     </div>
     <main class="main">
       <div class="memoListWrapper">
-        <div class ="memoList" v-for ="(memo, index) in memos" @click ="selectMemo(index)" :data-selected ="index == selectedIndex">
-          <p class="memoTitle">
-            {{displayTitle(memo.markdown)}}
-          </p>
+        <draggable :list="memos">
+          <div class ="memoList" v-for ="(memo, index) in memos" @click ="selectMemo(index)" :data-selected ="index == selectedIndex">
+            <p class="memoTitle">
+              {{displayTitle(memo.markdown)}}
+            </p>
         </div>
+        </draggable>
+        
         <button class="addMemoBtn" @click="addMemo">
           メモの追加
         </button>
@@ -33,10 +36,14 @@
 </template>
 
 <script>
+import draggable from "vuedraggable"
 import marked from "marked";
 export default {
   name: 'editor',
   props:['user'],
+  components:{
+    draggable,
+  },
   data () {
     return {
       memos:[
