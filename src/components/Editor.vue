@@ -137,7 +137,7 @@ export default {
 <style lang="scss">
   #editor{
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 10px auto 0;
   }
   .userArea{
     display: flex;
@@ -165,21 +165,25 @@ export default {
   .main{
     display: flex;
     justify-content: space-between;
+    margin-top: 10px;
   }
   .memoListWrapper{
     width: 19%;
-    border-top: 1px solid #000;
+    border-top: 1px solid #ccc;
   }
   .memoList{
     padding: 10px;
     box-sizing: border-box;
     text-align: left;
-    border-bottom: 1px solid #000;
+    border-bottom: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
     &:nth-child(even){
       background: #ccc;
     }
     &[data-selected="true"]{
       background: #ccf;
+      color: #fff;
     }
   }
   .memoTitle{
