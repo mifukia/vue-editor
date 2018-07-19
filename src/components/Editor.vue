@@ -14,7 +14,7 @@
         <draggable :list="memos">
           <div class ="memoList" v-for ="(memo, index) in memos" @click ="selectMemo(index)" :data-selected ="index == selectedIndex">
             <p class="memoTitle">
-              {{displayTitle(memo.markdown)}}
+              {{memoTitle(memo,index)}}
             </p>
         </div>
         </draggable>
@@ -29,8 +29,16 @@
           メモの保存
         </button>
       </div>
-      <textarea class="markdown" v-model="memos[selectedIndex].markdown"></textarea>
-      <div class="preview markdown-body" v-html="preview()"></div>
+      <div class="memoArea">
+        <div class="titleArea">
+          <input type="text" class="inputTitle" placeholder="タイトル" v-model="memos[selectedIndex].title">
+          <input type="text" class="inputTag" placeholder="タグ">
+        </div>
+        <div class="codeArea">
+          <textarea class="markdown" v-model="memos[selectedIndex].markdown"></textarea>
+          <div class="preview markdown-body" v-html="preview()"></div>
+        </div>
+      </div>
     </main>
   </div>
 </template>
@@ -48,7 +56,8 @@ export default {
     return {
       memos:[
         {
-          markdown:""
+          markdown:"",
+          title:""
         }
       ],
       selectedIndex:0,
@@ -90,7 +99,8 @@ export default {
     },
     addMemo(){
       this.memos.push({
-        markdown:"無題のメモ"
+        markdown:"無題のメモ",
+        title:""
       })
       console.log(this.memos)
     },
@@ -129,6 +139,14 @@ export default {
       https://www.sejuku.net/blog/27672
       */
       return text.split(/\n/)[0];
+    },
+    memoTitle(memo,index){
+      if(this.memos[index].title === null){
+        // return this.displayTitle(memo.markdown)
+        return "hoge"
+      }else{
+        return this.memos[index].title;
+      }
     }
   }
 }
@@ -168,7 +186,7 @@ export default {
     margin-top: 10px;
   }
   .memoListWrapper{
-    width: 19%;
+    width: 20%;
     border-top: 1px solid #ccc;
   }
   .memoList{
@@ -182,7 +200,7 @@ export default {
       background: #ccc;
     }
     &[data-selected="true"]{
-      background: #ccf;
+      background: #3399FF;
       color: #fff;
     }
   }
@@ -202,13 +220,33 @@ export default {
   .saveMemosBtn{
     margin-top: 20px;
   }
+  .memoArea{
+    width: 79%;
+  }
+  .titleArea{
+    width: 49.5%;
+    display: flex;
+    justify-content: space-between;
+  }
+  .inputTitle{
+    width: 60%;
+  }
+  .inputTag{
+    width: 38%;
+  }
+  .codeArea{
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
   .markdown{
-    width: 40%;
+    width: 49.5%;
     height: 500px;
   }
   .preview{
-    width: 40%;
+    width: 49.5%;
     text-align: left;
     border: 1px solid #ccf;
+    padding: 6px;
   }
 </style>
