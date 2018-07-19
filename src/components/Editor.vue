@@ -141,9 +141,9 @@ export default {
       return text.split(/\n/)[0];
     },
     memoTitle(memo,index){
-      if(this.memos[index].title === null){
-        // return this.displayTitle(memo.markdown)
-        return "hoge"
+      if(this.memos[index].title === undefined || this.memos[index].title === ""){
+        return this.displayTitle(memo.markdown)
+        
       }else{
         return this.memos[index].title;
       }
