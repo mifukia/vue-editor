@@ -11,14 +11,22 @@
     </div>
     <main class="main">
       <div class="memoListWrapper">
-        <draggable :list="memos">
-          <div class ="memoList" v-for ="(memo, index) in memos" @click ="selectMemo(index)" :data-selected ="index == selectedIndex">
-            <p class="memoTitle">
-              {{memoTitle(memo,index)}}
-            </p>
+        <select v-model="selectedTag">
+          <option value="ALL">ALL</option>
+          <option v-for = "(tag,index) in tag_nooverlap" :value="tag">#{{tag}}</option>
+        </select>
+        <div class="memoLists">
+          <draggable :list="memos">
+            <div class ="memoList" :class ="{dnone:hideTag(memo)}" v-for ="(memo, index) in memos" @click ="selectMemo(index)" :data-selected ="index == selectedIndex">
+              <p class="memoTitle">
+                {{memoTitle(memo,index)}}
+              </p>
+              <p class="memoTag" v-show="memo.tag">
+                #{{memo.tag}}
+              </p>
+            </div>
+          </draggable>
         </div>
-        </draggable>
-        
         <button class="addMemoBtn" @click="addMemo">
           メモの追加
         </button>
@@ -32,7 +40,7 @@
       <div class="memoArea">
         <div class="titleArea">
           <input type="text" class="inputTitle" placeholder="タイトル" v-model="memos[selectedIndex].title">
-          <input type="text" class="inputTag" placeholder="タグ">
+          <input type="text" class="inputTag" placeholder="タグ" v-model="memos[selectedIndex].tag">
         </div>
         <div class="codeArea">
           <textarea class="markdown" v-model="memos[selectedIndex].markdown"></textarea>
@@ -46,6 +54,7 @@
 <script>
 import draggable from "vuedraggable"
 import marked from "marked";
+import _ from "lodash"
 export default {
   name: 'editor',
   props:['user'],
@@ -57,10 +66,12 @@ export default {
       memos:[
         {
           markdown:"",
-          title:""
+          title:"",
+          tag:""
         }
       ],
       selectedIndex:0,
+      selectedTag:"ALL",
     }
   },
   created(){
@@ -93,6 +104,22 @@ export default {
     //キーダウンの設定を消す
     document.onkeydown = null;
   },
+  watch :{
+    selectedTag(){
+      if(this.selectedTag === "ALL"){
+        this.selectedIndex = 0
+      }else{
+        this.selectedIndex = _.findIndex(this.memos,memo => _.includes(memo.tag,this.selectedTag))
+      }
+    }
+  },
+  computed :{
+    //タグの配列から重複を削除した新たな配列を作成
+    tag_nooverlap(){
+      const taglist = _.map(this.memos,memo=>memo.tag)
+      return _.uniq(taglist);
+    }
+  },
   methods: {
     logout(){
       firebase.auth().signOut();
@@ -100,7 +127,8 @@ export default {
     addMemo(){
       this.memos.push({
         markdown:"無題のメモ",
-        title:""
+        title:"",
+        tag:""
       })
       console.log(this.memos)
     },
@@ -141,11 +169,19 @@ export default {
       return text.split(/\n/)[0];
     },
     memoTitle(memo,index){
+      //タイトルが入力されてたらそれを表示して、されてないなら一行目をタイトルとして表示
       if(this.memos[index].title === undefined || this.memos[index].title === ""){
         return this.displayTitle(memo.markdown)
         
       }else{
         return this.memos[index].title;
+      }
+    },
+    hideTag(memo){
+      if(this.selectedTag === "ALL"){
+        return false
+      }else{
+        return memo.tag !== this.selectedTag;
       }
     }
   }
@@ -187,7 +223,10 @@ export default {
   }
   .memoListWrapper{
     width: 20%;
+  }
+  .memoLists{
     border-top: 1px solid #ccc;
+    margin-top: 10px;
   }
   .memoList{
     padding: 10px;
@@ -196,20 +235,29 @@ export default {
     border-bottom: 1px solid #ccc;
     border-left: 1px solid #ccc;
     border-right: 1px solid #ccc;
-    &:nth-child(even){
-      background: #ccc;
-    }
     &[data-selected="true"]{
       background: #3399FF;
       color: #fff;
     }
+    &.dnone{
+      display: none;
+    }
+    cursor: pointer;
   }
   .memoTitle{
     height: 1.5em;
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
-    cursor: pointer;
+  }
+  .memoTag{
+    background: #666;
+    font-size: 11px;
+    line-height: 1.8;
+    color: #fff;
+    display: inline-block;
+    padding: 0 0.5em;
+    border-radius: 2px;
   }
   .addMemoBtn{
     margin-top: 20px;
