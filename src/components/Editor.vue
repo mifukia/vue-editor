@@ -42,6 +42,8 @@
           メモの保存
         </button>
       </div>
+     
+      
       <div class="memoArea">
         <div class="titleArea">
           <input type="text" class="inputTitle" placeholder="タイトル" v-model="memos[selectedIndex].title">
@@ -121,8 +123,11 @@ export default {
   computed :{
     //タグの配列から重複を削除した新たな配列を作成
     tag_nooverlap(){
-      const taglist = _.map(this.memos,memo=>memo.tag)
-      return _.uniq(taglist);
+      const taglist = _.map(this.memos,memo=>memo.tag) //tagだけに配列を作成
+      const newtaglist = [];
+      //多次元配列を一次元配列に結合（_.eachを二回回した。もっと他にやり方ありそう…）
+      _.each(taglist,tag=>_.each(tag,tagChild=>newtaglist.push(tagChild)))
+      return _.uniq(newtaglist);
     },
     tagJoin(){
       return this.memos[this.selectedIndex].tag.join(',')
@@ -192,7 +197,11 @@ export default {
       if(this.selectedTag === "ALL"){
         return false
       }else{
-        return memo.tag !== this.selectedTag;
+        if(memo.tag.indexOf(this.selectedTag) === -1){
+          return true
+        }else{
+          return false
+        }
       }
     }
   }
@@ -262,13 +271,18 @@ export default {
     overflow: hidden;
   }
   .memoTag{
-    background: #666;
-    font-size: 11px;
-    line-height: 1.8;
-    color: #fff;
-    display: inline-block;
-    padding: 0 0.5em;
-    border-radius: 2px;
+    ul{
+      li{
+        background: #666;
+        font-size: 11px;
+        line-height: 1.8;
+        color: #fff;
+        display: inline-block;
+        padding: 0 0.5em;
+        border-radius: 2px;
+        margin-right: 0.3em;
+      }
+    }
   }
   .addMemoBtn{
     margin-top: 20px;
