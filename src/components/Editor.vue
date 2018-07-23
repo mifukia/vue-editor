@@ -22,7 +22,12 @@
                 {{memoTitle(memo,index)}}
               </p>
               <p class="memoTag" v-show="memo.tag">
-                #{{memo.tag}}
+                <ul>
+                  <li v-for="tag in memo.tag">
+                    #{{tag}}
+                  </li>
+                </ul>
+                <!-- #{{memo.tag}} -->
               </p>
             </div>
           </draggable>
@@ -40,7 +45,7 @@
       <div class="memoArea">
         <div class="titleArea">
           <input type="text" class="inputTitle" placeholder="タイトル" v-model="memos[selectedIndex].title">
-          <input type="text" class="inputTag" placeholder="タグ" v-model="memos[selectedIndex].tag">
+          <input type="text" class="inputTag" placeholder="タグ" :value="tagJoin" @input="tagSplit($event)">
         </div>
         <div class="codeArea">
           <textarea class="markdown" v-model="memos[selectedIndex].markdown"></textarea>
@@ -67,7 +72,7 @@ export default {
         {
           markdown:"",
           title:"",
-          tag:""
+          tag:[]
         }
       ],
       selectedIndex:0,
@@ -118,7 +123,10 @@ export default {
     tag_nooverlap(){
       const taglist = _.map(this.memos,memo=>memo.tag)
       return _.uniq(taglist);
-    }
+    },
+    tagJoin(){
+      return this.memos[this.selectedIndex].tag.join(',')
+    },
   },
   methods: {
     logout(){
@@ -128,7 +136,7 @@ export default {
       this.memos.push({
         markdown:"無題のメモ",
         title:"",
-        tag:""
+        tag:[]
       })
       console.log(this.memos)
     },
@@ -176,6 +184,9 @@ export default {
       }else{
         return this.memos[index].title;
       }
+    },
+    tagSplit(event){
+      this.memos[this.selectedIndex].tag = event.target.value.split(',')
     },
     hideTag(memo){
       if(this.selectedTag === "ALL"){
